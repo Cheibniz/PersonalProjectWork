@@ -2,9 +2,11 @@
 #include<iomanip>
 #include<fstream>
 #include <set>
+#include<cmath>
 using namespace std;
 
 constexpr auto N = 6;
+
 class Point {
 public:
 	double pointX;
@@ -12,9 +14,11 @@ public:
 
 	Point(double x, double y) { pointX = x; pointY = y; }
 	bool operator< (const Point l1)const {
-		return this->pointX < l1.pointX && this->pointY < l1.pointY;
+		return memcmp(this, &l1, sizeof(l1)) < 0;
 	}
 };
+
+set<Point> pointSet;
 
 class Line{
 public:
@@ -22,28 +26,23 @@ public:
 	double b;
 	double c;
 public:
-	Line() {};
+	//Line() {};
 	Line(double x0, double y0, double x1, double y1) {
 		a = y1 - y0;
 		b = x0 - x1;
 		c = x1 * y0 - x0 * y1;
 	};
-	Line GetLine(Point ptSource, Point ptDestination);
+	Line(double x0, double y0, double x1) {
+		a = x0;
+		b = y0;
+		c = x1;
+	};
 	Point GetCrossPoint(Line l1);
 
 	bool operator< (const Line l1)const {
-		return this->a < l1.a && this->b < l1.b && this->c < l1.c;
+		return memcmp(this, &l1, sizeof(l1)) < 0;
 	}
 };
-
-Line Line::GetLine(Point ptSource, Point ptDestination)
-{
-	Line lTemp;
-	lTemp.a = ptSource.pointY - ptDestination.pointY;
-	lTemp.b = ptDestination.pointX - ptSource.pointX;
-	lTemp.c = ptSource.pointX * ptDestination.pointY - ptDestination.pointX * ptSource.pointY;
-	return lTemp;
-}
 
 Point Line::GetCrossPoint(Line l1)
 {
@@ -59,17 +58,58 @@ Point Line::GetCrossPoint(Line l1)
 	return pTemp;
 }
 
+class Circle
+{
+public:
+	Point center;
+	double r;
+	Circle(Point p, int i) : center(p),r(i) {};
+	int GetCrossToCircle(Circle c1);
+	int GetCrossToLine(Line l1);
+	bool operator< (const Circle c1)const {
+		return r < c1.r && center < c1.center;
+	}
+};
+
+int Circle::GetCrossToCircle(Circle c1)
+{
+	return 0;
+}
+
+int Circle::GetCrossToLine(Line l1)
+{
+	double length = fabs(l1.a * center.pointX + l1.b * center.pointY + l1.c) / sqrt(l1.a * l1.a + l1.b * l1.b);
+	if (length > r) {
+		return 0;
+	}
+	Line lr(l1.b, -l1.a, l1.a * center.pointY - l1.b * center.pointX);
+	Point t1 = lr.GetCrossPoint(l1);
+	
+	if (length == r)
+	{
+		pointSet.insert(t1);
+		return 1;
+	}
+	double dd = sqrt(r * r - length * length), length2 = sqrt(l1.a * l1.a + l1.b * l1.b);
+	double shiftX = -dd * l1.b / length2, shiftY = dd * l1.a / length2;
+	Point cross1(t1.pointX + shiftX, t1.pointY + shiftY);
+	Point cross2(t1.pointX - shiftX, t1.pointY - shiftY);
+	pointSet.insert(cross1);
+	pointSet.insert(cross2);
+	return 2;
+}
 
 void main(int argc, char** argv)
 {
 	ifstream infile;
 	ofstream outfile;
-
+	//pointSet.insert(Point(0.7, -0.7));
+	//pointSet.insert(Point(-0.7, 0.7));
 	int n;
-	double x0, x1, x2, x3, y0, y1, y2, y3;
+	double x0, x1, y0, y1;
 	char type, c1, d0;
 	set<Line> lineSet;
-	set<Point> pointSet;
+	set<Circle> circleSet;
 	if (!strcmp(argv[1], "-i") && !strcmp(argv[3], "-o"))
 	{
 		infile = ifstream(argv[2]);
@@ -100,12 +140,25 @@ void main(int argc, char** argv)
 				}
 				catch (const exception&) {}
 			}
+			for (Circle temp : circleSet) {
+				temp.GetCrossToLine(l);
+			}
 			lineSet.insert(l);
 		}
 		else if (type == 'C')
 		{
-
+			infile >> x0 >> y0 >> x1;
+			Circle circle(Point(x0, y0), x1);
+			for (Line temp : lineSet) {
+				circle.GetCrossToLine(temp);
+			}
+			for (Circle temp : circleSet)
+			{
+				circle.GetCrossToCircle(temp);
+			}
+			circleSet.insert(circle);
 		}
 	}
 	outfile << pointSet.size() << endl;
 }
+
