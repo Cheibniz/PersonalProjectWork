@@ -1,8 +1,8 @@
-#ifndef PERSONAL_H
-#define PERSONAL_H
+#ifndef _PERSONAL_H_
+#define _PERSONAL_H_
 #include <unordered_set>
 
-#define EPS 10e-10
+#define EPS 1e-10
 using namespace std;
 
 class Point {

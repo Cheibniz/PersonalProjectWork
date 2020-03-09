@@ -51,22 +51,20 @@ int Circle::GetCrossToCircle(Circle c1)
 
 int Circle::GetCrossToLine(Line l1)
 {
-	double length = fabs(l1.a * center.pointX + l1.b * center.pointY + l1.c) / sqrt(l1.a * l1.a + l1.b * l1.b);
-	if (length > r) {
+	double a0 = l1.a, b0 = l1.b, c0 = l1.c, a1 = center.pointX, b1 = center.pointY, r1 = r;
+	double a12 = a1 * a1, b12 = b1 * b1, r12 = r1 * r1, a02 = a0 * a0, b02 = b0 * b0, c02 = c0 * c0;
+	double delta = -a02 * a12 + a02 * r12 - 2 * a0 * a1 * b0 * b1 - 2 * a0 * a1 * c0 - b02 * b12 + b02 * r12 - 2 * b0 * b1 * c0 - c02;
+	if (delta < 0) {
 		return 0;
 	}
+	double delta_1 = a02 + b02;
 	Line lr(l1.b, -l1.a, l1.a * center.pointY - l1.b * center.pointX);
 	Point t1 = lr.GetCrossPoint(l1);
-	
-	if (length == r)
-	{
-		pointSet.insert(t1);
-		return 1;
-	}
-	double dd = sqrt(r * r - length * length), length2 = sqrt(l1.a * l1.a + l1.b * l1.b);
-	double shiftX = -dd * l1.b / length2, shiftY = dd * l1.a / length2;
-	Point cross1(t1.pointX + shiftX, t1.pointY + shiftY);
-	Point cross2(t1.pointX - shiftX, t1.pointY - shiftY);
+	double delta_2 = sqrt(delta);
+	double delta_3 = a0 * c0 - a1 * b02 + a0 * b0 * b1;
+	double delta_4 = b0 * c0 - a02 * b1 + a0 * a1 * b0;
+	Point cross1(-(delta_3 - b0 * delta_2) / delta_1, -(delta_4 + a0 * delta_2) / delta_1);
+	Point cross2(-(delta_3 + b0 * delta_2) / delta_1, -(delta_4 - a0 * delta_2) / delta_1);
 	pointSet.insert(cross1);
 	pointSet.insert(cross2);
 	return 2;
@@ -81,7 +79,6 @@ int main(int argc, char** argv)
 	char type;
 	set<Line> lineSet;
 	set<Circle> circleSet;
-
 	if (!strcmp(argv[1], "-i") && !strcmp(argv[3], "-o"))
 	{
 		infile = ifstream(argv[2]);
@@ -134,7 +131,7 @@ int main(int argc, char** argv)
 	outfile << pointSet.size() << endl;
 	//for (Point p : pointSet)
 	//{
-	//	cout << pointSet.size() << endl;
+		cout << pointSet.size() << endl;
 	//}
 	return 0;
 }
