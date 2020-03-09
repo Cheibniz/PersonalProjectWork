@@ -3,44 +3,9 @@
 #include<fstream>
 #include <set>
 #include<cmath>
+#include"Personal.h"
+#include <random>
 using namespace std;
-
-class Point {
-public:
-	double pointX;
-	double pointY;
-
-	Point(double x, double y) { pointX = x; pointY = y; }
-	bool operator< (const Point l1)const {
-		return memcmp(this, &l1, sizeof(l1)) < 0;
-	}
-};
-
-set<Point> pointSet;
-
-class Line{
-public:
-	double a;
-	double b;
-	double c;
-public:
-	//Line() {};
-	Line(double x0, double y0, double x1, double y1) {
-		a = y1 - y0;
-		b = x0 - x1;
-		c = x1 * y0 - x0 * y1;
-	};
-	Line(double x0, double y0, double x1) {
-		a = x0;
-		b = y0;
-		c = x1;
-	};
-	Point GetCrossPoint(Line l1);
-
-	bool operator< (const Line l1)const {
-		return memcmp(this, &l1, sizeof(l1)) < 0;
-	}
-};
 
 Point Line::GetCrossPoint(Line l1)
 {
@@ -56,18 +21,7 @@ Point Line::GetCrossPoint(Line l1)
 	return pTemp;
 }
 
-class Circle
-{
-public:
-	Point center;
-	double r;
-	Circle(Point p, int i) : center(p),r(i) {};
-	int GetCrossToCircle(Circle c1);
-	int GetCrossToLine(Line l1);
-	bool operator< (const Circle c1)const {
-		return memcmp(this, &c1, sizeof(c1)) < 0;
-	}
-};
+
 
 int Circle::GetCrossToCircle(Circle c1)
 {
@@ -118,15 +72,16 @@ int Circle::GetCrossToLine(Line l1)
 	return 2;
 }
 
-void main(int argc, char** argv)
+int main(int argc, char** argv)
 {
 	ifstream infile;
 	ofstream outfile;
 	int n;
 	double x0, x1, y0, y1;
-	char type, c1, d0;
+	char type;
 	set<Line> lineSet;
 	set<Circle> circleSet;
+
 	if (!strcmp(argv[1], "-i") && !strcmp(argv[3], "-o"))
 	{
 		infile = ifstream(argv[2]);
@@ -177,5 +132,10 @@ void main(int argc, char** argv)
 		}
 	}
 	outfile << pointSet.size() << endl;
+	//for (Point p : pointSet)
+	//{
+	//	cout << pointSet.size() << endl;
+	//}
+	return 0;
 }
 
