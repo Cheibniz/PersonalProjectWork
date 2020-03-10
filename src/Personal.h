@@ -1,6 +1,7 @@
 #ifndef _PERSONAL_H_
 #define _PERSONAL_H_
 #include <unordered_set>
+#include <set>
 
 #define EPS 1e-10
 using namespace std;
@@ -15,18 +16,14 @@ public:
 		
 		if (fabs(pointX - l1.pointX) < EPS)
 		{
-			if (fabs(pointY - l1.pointY) < EPS) {
-				return false;
-			}
-			
+			return pointY < l1.pointY && fabs(pointY - l1.pointY) > EPS;
+		}
+		else
+		{
+			return pointX < l1.pointX && fabs(pointX - l1.pointX) > EPS;
 		}
 		return true;
 	}
-};
-
-struct MyStruct
-{
-
 };
 
 class Line {
@@ -77,7 +74,7 @@ public:
 	}
 };
 
-unordered_set<Point, RecordHash, RecordCmp> pointSet;
-//set<pair<double, double>> pointSet;
-//set<Point> pointSet;
+//unordered_set<Point, RecordHash, RecordCmp> pointSet;
+
+set<Point> pointSet;
 #endif

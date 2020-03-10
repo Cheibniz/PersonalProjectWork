@@ -1,7 +1,6 @@
 ﻿#include<iostream>
 #include<iomanip>
 #include<fstream>
-#include <set>
 #include<cmath>
 #include"Personal.h"
 #include <random>
@@ -129,10 +128,11 @@ int main(int argc, char** argv)
 		}
 	}
 	outfile << pointSet.size() << endl;
-	//for (Point p : pointSet)
-	//{
+	/*for (int i = 0; i < 10000; i++)
+	{
 		cout << pointSet.size() << endl;
-	//}
+	}*/
+	
 	return 0;
 }
 
